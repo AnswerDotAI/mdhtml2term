@@ -15,10 +15,11 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
 ]
 
-dependencies = []
+dependencies = ["mdhtml>=0.1.39", "fastcore", "rich"]
 
 [project.optional-dependencies]
 dev = [
+  "pytest",
   "fastship",
   "build",
   "twine",

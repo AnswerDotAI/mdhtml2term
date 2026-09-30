@@ -1,29 +1,34 @@
 # mdhtml2term
 
-A modern Python package scaffolded by **fastship**.
+Render [MDHTML](https://github.com/AnswerDotAI/mdhtml) Markdown in the terminal with [Rich](https://github.com/Textualize/rich).
 
-## Development
+`md_blocks` parses Markdown with `mdhtml` and returns one Rich renderable per top-level block. A terminal app can then print, fold or replace each block on its own. ipyai uses it to render AI replies.
 
-```bash
-pip install -e .[dev]
-```
-
-## Versioning
-
-Version lives in `mdhtml2term/__init__.py` as `__version__`.
-Bump it with:
+## Install
 
 ```bash
-ship-bump --part 2   # patch
-ship-bump --part 1   # minor
-ship-bump --part 0   # major
+pip install mdhtml2term
 ```
 
-## Release
+## Usage
 
-1) Ensure your GitHub issues are labeled (`bug`, `enhancement`, `breaking`).
-2) Run:
+```python
+from rich.console import Console
+from mdhtml2term import md_blocks
 
-```bash
-ship-release
+console = Console()
+for block in md_blocks(markdown_text): console.print(block)
 ```
+
+`md_blocks` takes a Markdown string and returns a list of Rich renderables. `theme` names the Pygments theme for code blocks, and defaults to `ansi_dark`. Other keyword arguments go to `mdhtml.md2dom`.
+
+## Supported content
+
+- Headings, paragraphs, block quotes, lists, code blocks, tables and horizontal rules. Block quotes and list items can hold any other block, including code and further quotes.
+- Bold, italic, inline code, strikethrough, highlight and line breaks.
+- Links, as OSC 8 hyperlinks followed by their address in brackets.
+- Images, as their alt text in square brackets.
+- Task list checkboxes, as `[ ]` and `[x]`.
+- A numbered list that resumes after other content keeps its numbering.
+
+Other inline elements show their text. Other block containers render their children.
