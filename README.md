@@ -20,7 +20,7 @@ console = Console()
 for block in md_blocks(markdown_text): console.print(block)
 ```
 
-`md_blocks` takes a Markdown string and returns a list of Rich renderables. `theme` names the Pygments theme for code blocks, and defaults to `ansi_dark`. Other keyword arguments go to `mdhtml.md2dom`.
+`md_blocks` takes a Markdown string and returns a list of Rich renderables. `theme` names the Pygments theme for code blocks and defaults to `ansi_dark`. Other keyword arguments go to `mdhtml.parse_md`. The shared Rust document engine resolves references and assigns numbers. Unresolved references show their target ids.
 
 ## Supported content
 
@@ -31,4 +31,4 @@ for block in md_blocks(markdown_text): console.print(block)
 - Task list checkboxes, as `[ ]` and `[x]`.
 - A numbered list that resumes after other content keeps its numbering.
 
-Other inline elements show their text. Other block containers render their children.
+Other inline elements show their text. Other block containers render their children. Raw payloads and unresolved template instructions are omitted.
