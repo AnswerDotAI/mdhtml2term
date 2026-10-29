@@ -1,5 +1,10 @@
 <!-- do not remove -->
 
+## 0.1.1
+
+- API update
+
+
 ## 0.1.0
 
 ### New Features
