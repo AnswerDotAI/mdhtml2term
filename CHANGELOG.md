@@ -1,5 +1,12 @@
 <!-- do not remove -->
 
+## 0.1.2
+
+### New Features
+
+- Add `cite_style` option to `md_blocks` for numeric or author-year citations and bibliographies ([#2](https://github.com/AnswerDotAI/mdhtml2term/issues/2))
+
+
 ## 0.1.1
 
 - API update
