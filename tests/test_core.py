@@ -54,3 +54,9 @@ def test_containers():
     assert 'docxlite (https://pypi.org/p/docxlite)' in out
     out = render(md_blocks('<https://x.y> and https://a.b/c')[0])
     assert out.strip() == 'https://x.y and https://a.b/c'
+
+def test_citations():
+    src = 'See [@ruder], [@ruder]{ref=text}, and [@ruder; @missing, p. 4].\n\n::: bibliography\nHoward and Ruder {#ruder year=2018}\n: Jeremy Howard and Sebastian Ruder. *ULMFiT*.\n:::\n'
+    for style, citation in [('numeric', 'Howard and Ruder [1]'), ('author-year', 'Howard and Ruder (2018)')]:
+        out = ''.join(render(block, width=150) for block in md_blocks(src, cite_style=style))
+        assert citation in out and 'missing, p. 4' in out and 'Jeremy Howard' in out and 'ULMFiT' in out

@@ -32,3 +32,5 @@ for block in md_blocks(markdown_text): console.print(block)
 - A numbered list that resumes after other content keeps its numbering.
 
 Other inline elements show their text. Other block containers render their children. Raw payloads and unresolved template instructions are omitted.
+
+Bibliographies use mdhtml's `::: bibliography` syntax with explicit citation-author terms, ids, optional `year` attributes and formatted entry definitions. Citations and bibliography layout are prepared in Rust. `md_blocks(..., cite_style='numeric')` selects numbers in bibliography order; `'author-year'` selects author-year text. None inherits frontmatter. Unresolved citation keys remain visible in drafts.

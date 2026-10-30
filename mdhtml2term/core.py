@@ -103,9 +103,10 @@ def _blocks(nodes, theme): return [r for node in nodes if (r := _block(node, the
 def md_blocks(
     md:str, # Markdown source
     theme:str='ansi_dark', # Pygments theme for code blocks
+    cite_style=None, # Citation style; None inherits document metadata
     **kwargs
 ):
     "One Rich renderable per top-level semantic block of `md`."
-    doc = mdhtml.parse_md(md, **kwargs).bake(refs='lenient', links=False)
+    doc = mdhtml.parse_md(md, **kwargs).bake(refs='lenient', links=False, cite_style=cite_style)
     notes = [Prefixed(_blocks(body, theme), f'[{label}] ', ' ' * (cell_len(label) + 3)) for label,body in doc.footnotes.items()]
     return _blocks(doc.blocks, theme) + notes
