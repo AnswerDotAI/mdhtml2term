@@ -4,18 +4,23 @@ use unicode_width::UnicodeWidthStr;
 
 #[test]
 fn scientific_reply_reflows_without_losing_its_meaning() {
-    let md = r#"# Training
+    let md = r#"---
+cite_style: numeric
+---
+# Training
 
 **See** [@ruder]{ref=text}.
 
 | Model | Description                    | Count |
 |:------|:-------------------------------|------:|
-| base  | A short run                    |     7 |
-| tuned | Full training with a warmup    |  1234 |
+| base  | [results](https://named.run)  |     7 |
+| tuned | <https://bare.run>            |  1234 |
 : Training runs {#tbl-runs}
 
-- [Data](https://data.test)
-- <https://run.test>[^settings]
+> - [x] [Data](https://data.test)
+>   - [ ] <https://run.test>[^settings]
+
+3. Release
 
 ```python
 def train():
@@ -28,24 +33,26 @@ def train():
 Howard and Ruder {#ruder year=2018}
 : Jeremy Howard and Sebastian Ruder. *ULMFiT*.
 :::"#;
-    for width in [22, 72] {
-        let sections = mdhtml2term::sections(md, width);
+    for (width, style, citation) in [(22, None, "Howard and Ruder [1]"), (72, Some(mdhtml2term::CiteStyle::AuthorYear), "Howard and Ruder (2018)")] {
+        let sections = mdhtml2term::sections_with_style(md, width, style);
         let sources: Vec<_> = sections.iter().map(|s| s.source.trim()).collect();
         assert_eq!(&sources[..2], ["# Training", "**See** [@ruder]{ref=text}."]);
         assert!(sources[2].starts_with("| Model") && sources[2].ends_with(": Training runs {#tbl-runs}"));
-        assert!(sources[3].starts_with("- [Data]") && sources[3].contains("\n- <https://run.test>"));
+        assert!(sources[3].starts_with("> - [x] [Data]") && sources[3].contains("  - [ ] <https://run.test>"));
         assert!(sources.last().unwrap().starts_with("[^settings]:"));
         assert!(sections[0].rows[0].contains("\x1b[1m"));
         assert_eq!(sections.iter().filter(|s| s.code && s.source.starts_with("```python")).count(), 1);
         let blocks = sections.into_iter().flat_map(|s| s.rows).collect();
-        for rows in [blocks, render(md, width)] {
+        for rows in [blocks, mdhtml2term::render_with_style(md, width, style)] {
             assert!(rows.iter().any(|r| r.contains("\x1b[38;2;") && r.contains("return")));
             let plain: Vec<_> = rows.iter().map(strip_str).collect();
             assert!(plain.iter().all(|r| r.width() <= usize::from(width) && !r.contains('\n')));
             let text = plain.join(" ");
-            assert!(text.contains("Howard and Ruder (2018)") && text.contains("ULMFiT"));
+            assert!(text.contains(citation) && text.contains("ULMFiT"));
             assert!(text.contains("Table 1: Training runs") && text.contains("optimizer"));
             assert!(text.contains("Data") && text.matches("https://data.test").count() == 1 && text.matches("https://run.test").count() == 1);
+            assert!(text.contains("[x] Data") && text.contains("[ ]") && text.contains("3. Release"), "{text}");
+            if width == 72 { assert!(text.contains("results") && text.matches("https://named.run").count() == 1 && text.matches("https://bare.run").count() == 1, "{text}"); }
             let end = |value: &str| {
                 let row = plain.iter().find(|r| r.contains(value)).unwrap();
                 row[..row.find(value).unwrap()].width() + value.len()

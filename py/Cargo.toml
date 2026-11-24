@@ -1,0 +1,17 @@
+[package]
+name = "mdhtml2term-py"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+test = false
+doctest = false
+
+[dependencies]
+mdhtml2term = { path = ".." }
+pyo3 = { version = ">=0.29", features = ["extension-module"] }
+
+[build-dependencies]
+pyo3-build-config = ">=0.29"

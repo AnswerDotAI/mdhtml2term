@@ -1,62 +1,13 @@
-from rich.console import Console
-from rich.syntax import Syntax
-from mdhtml2term import md_blocks
+import pytest
+from mdhtml2term import render, sections
 
-def render(r, width=60, term=False):
-    c = Console(width=width, force_terminal=term, color_system='truecolor' if term else None)
-    with c.capture() as cap: c.print(r)
-    return cap.get()
 
-MD = """# Title
-
-Some **bold**, `code`, and [a link](http://x.com).
-
-```python
-print(1)
-```
-
-- one
-- two
-  - nested
-
-> quoted line
-
-| a | bb |
-|:--|--:|
-| 1 | 2 |
-"""
-
-def test_md_blocks():
-    bs = md_blocks(MD)
-    assert render(bs[0]).strip() == '# Title'
-    assert 'a link (http://x.com)' in render(bs[1])
-    para = render(bs[1], term=True)
-    assert '\x1b]8;' in para and 'http://x.com' in para  # OSC 8: links must be real, not costume
-    assert '\x1b[1mbold' in para
-    assert isinstance(bs[2], Syntax) and bs[2].code == 'print(1)'
-    out = render(bs[3])
-    assert '• one' in out and '  • nested' in out
-    assert render(bs[4]).startswith('│ quoted line')
-    head, rule, row = render(bs[5]).splitlines()
-    assert head.split() == ['a', 'bb'] and '─' in rule
-    assert row.rstrip().index('2') == head.rstrip().rindex('b')  # right-aligned column
-
-def test_containers():
-    out = render(md_blocks("> - quoted item\n>\n> ```py\n> x = 1\n> ```\n>\n> > nested quote\n")[0])
-    assert '│ • quoted item' in out and '│ x = 1' in out and '│ │ nested quote' in out
-    assert '[a chart]' in render(md_blocks('![a chart](x.png) and more')[0])
-    assert render(md_blocks('1. a\n2. b\n\npara\n\n3. c\n')[2]).strip() == '3. c'
-    out = render(md_blocks('- [ ] todo\n- [x] done\n')[0])
-    assert '• [ ] todo' in out and '• [x] done' in out
-    lines = render(md_blocks('- step\n\n  ```py\n  x = 1\n  ```\n')[0]).splitlines()
-    assert lines[0].rstrip() == '• step' and lines[1].startswith('  x = 1')
-    out = render(md_blocks('- [docxlite](https://pypi.org/p/docxlite) - read docx')[0])
-    assert 'docxlite (https://pypi.org/p/docxlite)' in out
-    out = render(md_blocks('<https://x.y> and https://a.b/c')[0])
-    assert out.strip() == 'https://x.y and https://a.b/c'
-
-def test_citations():
-    src = 'See [@ruder], [@ruder]{ref=text}, and [@ruder; @missing, p. 4].\n\n::: bibliography\nHoward and Ruder {#ruder year=2018}\n: Jeremy Howard and Sebastian Ruder. *ULMFiT*.\n:::\n'
-    for style, citation in [('numeric', 'Howard and Ruder [1]'), ('author-year', 'Howard and Ruder (2018)')]:
-        out = ''.join(render(block, width=150) for block in md_blocks(src, cite_style=style))
-        assert citation in out and 'missing, p. 4' in out and 'Jeremy Howard' in out and 'ULMFiT' in out
+def test_select_cited_prose_and_code():
+    prose = 'Résumé: [@ruder]{ref=text}.'
+    fence = '```python\nscore = 92\n```'
+    md = prose + '\n\n' + fence + '\n\n::: bibliography\nHoward and Ruder {#ruder year=2018}\n: ULMFiT.\n:::'
+    para, code, *_ = sections(md, 80, cite_style='numeric')
+    assert para.source.strip() == prose and not para.code
+    assert any('[1]' in row for row in para.rows)
+    assert code.code and code.source.strip() == fence
+    with pytest.raises(ValueError): render(md, 80, cite_style='unknown')

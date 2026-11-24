@@ -1,35 +1,30 @@
 [build-system]
-requires = ["setuptools>=77"]
-build-backend = "setuptools.build_meta"
+requires = ["maturin>=1.13,<2.0", "fastws-cli>=0.0.29"]
+build-backend = "fastws.build_backend"
 
 [project]
 name = "mdhtml2term"
 dynamic = ["version"]
-description = "Render MDHTML in the terminal with Rich"
+description = "Render MDHTML Markdown as width-aware, styled terminal rows."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
 authors = [{name = "Jeremy Howard", email = "github@jhoward.fastmail.fm"}]
-classifiers = [
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3 :: Only",
-]
-
-dependencies = ["mdhtml>=0.1.44", "fastcore", "rich"]
+classifiers = ["Programming Language :: Rust", "Programming Language :: Python :: Implementation :: CPython"]
 
 [project.optional-dependencies]
-dev = [
-  "pytest",
-  "fastship",
-  "build",
-  "twine",
-]
+dev = ["fastship", "pytest"]
 
 [project.urls]
 Homepage = "https://github.com/AnswerDotAI/mdhtml2term"
 
-[tool.setuptools.dynamic]
-version = { attr = "mdhtml2term.__version__" }
+[tool.maturin]
+manifest-path = "py/Cargo.toml"
+python-source = "python"
+module-name = "mdhtml2term._core"
 
-[tool.setuptools.packages.find]
-include = ["mdhtml2term"]
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { file = "Cargo.toml" }, { file = "py/Cargo.toml" }]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

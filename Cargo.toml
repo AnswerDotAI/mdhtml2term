@@ -1,11 +1,20 @@
-[package]
-name = "mdhtml2term"
+[workspace]
+members = ["py"]
+default-members = [".", "py"]
+
+[workspace.package]
 version = "0.1.5"
 edition = "2024"
+
+[package]
+name = "mdhtml2term"
+version.workspace = true
+edition.workspace = true
 rust-version = "1.91"
 license = "Apache-2.0"
 repository = "https://github.com/AnswerDotAI/mdhtml2term"
 description = "Render MDHTML Markdown as width-aware, styled terminal rows."
+include = ["/src/", "/LICENSE", "/README.md"]
 
 [lib]
 test = false
@@ -21,3 +30,29 @@ unicode-width = "0.2"
 
 [dev-dependencies]
 strip-ansi-escapes = "0.2"
+
+[profile.test]
+inherits = "release"
+
+[profile.release]
+lto = false
+codegen-units = 16
+
+[profile.release.package.mdhtml2term]
+incremental = true
+
+[profile.release.package.mdhtml2term-py]
+incremental = true
+
+[profile.dist]
+inherits = "release"
+lto = true
+incremental = false
+codegen-units = 1
+strip = true
+
+[profile.dist.package.mdhtml2term]
+incremental = false
+
+[profile.dist.package.mdhtml2term-py]
+incremental = false
