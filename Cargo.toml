@@ -1,0 +1,23 @@
+[package]
+name = "mdhtml2term"
+version = "0.1.4"
+edition = "2024"
+rust-version = "1.91"
+license = "Apache-2.0"
+repository = "https://github.com/AnswerDotAI/mdhtml2term"
+description = "Render MDHTML Markdown as width-aware, styled terminal rows."
+
+[lib]
+test = false
+doctest = false
+
+[dependencies]
+comfy-table = { version = "8", default-features = false }
+html2text = { version = "0.17", features = ["css"] }
+mdhtml-crate = ">=0.1.51"
+syntect = { version = "5", default-features = false, features = ["default-syntaxes", "default-themes", "html", "regex-fancy"] }
+textwrap = { version = "0.16", default-features = false, features = ["unicode-width"] }
+unicode-width = "0.2"
+
+[dev-dependencies]
+strip-ansi-escapes = "0.2"
