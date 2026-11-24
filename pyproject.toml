@@ -13,7 +13,8 @@ authors = [{name = "Jeremy Howard", email = "github@jhoward.fastmail.fm"}]
 classifiers = ["Programming Language :: Rust", "Programming Language :: Python :: Implementation :: CPython"]
 
 [project.optional-dependencies]
-dev = ["fastship", "pytest"]
+test = ["pytest"]
+dev = ["fastship", "mdhtml2term[test]"]
 
 [project.urls]
 Homepage = "https://github.com/AnswerDotAI/mdhtml2term"
