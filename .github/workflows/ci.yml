@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: '3.13'
       - run: cargo test
-      - run: uv pip install --system -C build-args=--profile=test -e '.[test]'
+      - run: uv pip install --system -e '.[test]'
       - run: pytest -q
 
   build:
@@ -43,7 +43,7 @@ jobs:
       - uses: PyO3/maturin-action@v1
         with:
           args: --profile dist --out dist ${{ runner.os == 'Linux' && '--zig' || '' }}
-          manylinux: 2_17
+          manylinux: '2_17'
       - uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.os }}
