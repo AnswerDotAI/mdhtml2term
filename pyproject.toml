@@ -7,7 +7,7 @@ name = "mdhtml2term"
 dynamic = ["version"]
 description = "Render MDHTML Markdown as width-aware, styled terminal rows."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{name = "Jeremy Howard", email = "github@jhoward.fastmail.fm"}]
 classifiers = ["Programming Language :: Rust", "Programming Language :: Python :: Implementation :: CPython"]
@@ -19,10 +19,11 @@ dev = ["fastship", "mdhtml2term[test]"]
 [project.urls]
 Homepage = "https://github.com/AnswerDotAI/mdhtml2term"
 
+Documentation = "https://AnswerDotAI.github.io/mdhtml2term/"
 [tool.maturin]
 manifest-path = "py/Cargo.toml"
 python-source = "python"
-module-name = "mdhtml2term._core"
+module-name = "mdhtml2term.core"
 
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { file = "Cargo.toml" }, { file = "py/Cargo.toml" }]

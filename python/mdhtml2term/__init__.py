@@ -1,1 +1,2 @@
-from ._core import Section, __version__, highlight, highlight_spans, render, render_html, sections
+from .core import *
+from .core import __version__

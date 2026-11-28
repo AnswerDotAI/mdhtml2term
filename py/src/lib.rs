@@ -1,5 +1,5 @@
 #[pyo3::pymodule]
-mod _core {
+mod core {
     use mdhtml2term::CiteStyle;
     use pyo3::{exceptions::PyValueError, prelude::*};
 
@@ -11,7 +11,7 @@ mod _core {
     }
 
     /// Original Markdown and rendered terminal rows for a selectable block.
-    #[pyclass(module = "mdhtml2term", frozen, get_all)]
+    #[pyclass(module = "mdhtml2term.core", frozen, get_all)]
     struct Section { source: String, rows: Vec<String>, code: bool }
 
     /// Render a complete Markdown document as ANSI-styled rows.
